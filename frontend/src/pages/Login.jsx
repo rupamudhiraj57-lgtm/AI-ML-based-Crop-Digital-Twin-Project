@@ -3,9 +3,12 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Leaf, Mail, Lock } from 'lucide-react'
 import { loginUser } from '../services/authService'
+import { useAuth } from '../context/AuthContext'
 
-export default function Login() {
+  export default function Login() {
   const navigate = useNavigate()
+  const { setUser } = useAuth()
+
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,8 +23,10 @@ export default function Login() {
     setLoading(true)
 
     try {
-      await loginUser(form)
-      navigate('/fields')
+      const data = await loginUser(form)
+
+      setUser(data.user)
+      navigate('/fields', { replace: true })
     } catch (err) {
       setError(err.message || 'Unable to log in. Please try again.')
     } finally {
